@@ -1,0 +1,11 @@
+<resources>
+    <string name="get_photo_capture">拍照</string>
+    <string name="get_photo_from_local">从图库中选择</string>
+
+    <!--权限-->
+    <string name="permissions_denied_tips_camera">需要相机权限，请在「系统设置」-「应该管理」-「%s」中打开</string>
+    <string name="permissions_denied_tips_storage">需要存储权限，请在「系统设置」-「应用管理」-「%s」- [权限管理] 中打开</string>
+
+    <string name="cancel">取消</string>
+    <string name="tip_select_voideo_tittle">选择要上传的视频</string>
+</resources>
