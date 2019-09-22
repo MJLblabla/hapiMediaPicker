@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         // 选择图片　默认选择弹窗
         button.setOnClickListener {
-            mPicPickHelper.show(Size.Cover, object : ImagePickCallback {
+            mPicPickHelper.show(Size(1,1), object : ImagePickCallback {
                 override fun onSuccess(result: String?) {
                     Toast.makeText(this@MainActivity, "文件路径${result}", Toast.LENGTH_SHORT).show()
                 }
@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         // 选择图片从　相机
         button3.setOnClickListener {
-            mPicPickHelper.fromCamera(Size.Cover, object : ImagePickCallback {
+            mPicPickHelper.fromCamera(null, object : ImagePickCallback {
                 override fun onSuccess(result: String?) {
                     Toast.makeText(this@MainActivity, "文件路径${result}", Toast.LENGTH_SHORT).show()
                 }
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         // 选择图片从　图库
         button2.setOnClickListener {
-            mPicPickHelper.fromLocal(Size.Cover, object : ImagePickCallback {
+            mPicPickHelper.fromLocal(Size(1,1), object : ImagePickCallback {
                 override fun onSuccess(result: String?) {
                     Toast.makeText(this@MainActivity, "文件路径${result}", Toast.LENGTH_SHORT).show()
                 }

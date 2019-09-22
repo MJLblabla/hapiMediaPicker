@@ -1,7 +1,7 @@
 package com.hapi.mediapicker
 
 /**
- * @author athoucai
+ *
  * @date 2018/12/14
  */
 interface ImagePickCallback :BaseCallBack{

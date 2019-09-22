@@ -16,7 +16,7 @@ import com.tbruyelle.rxpermissions2.RxPermissions
 import java.lang.ref.WeakReference
 
 /**
- * @author athoucai
+ *
  * @date 2018/12/14
  */
 class VideoPickHelper constructor(activity: FragmentActivity) {

@@ -26,7 +26,7 @@ class PicPickHelper(activity: FragmentActivity) {
     /**
      * 使用默认选择弹窗
      */
-    fun show(size: Size, callback: ImagePickCallback) {
+    fun show(size: Size?, callback: ImagePickCallback) {
         photoRequestFragment.callback = callback
         photoRequestFragment.size = size
         val bottomDialog = Dialog(activityWeakReference.get(), R.style.BottomViewWhiteMask)
@@ -63,7 +63,7 @@ class PicPickHelper(activity: FragmentActivity) {
     /**
      * 打开相机选择
      */
-    fun fromCamera(size: Size, callback: ImagePickCallback) {
+    fun fromCamera(size: Size?, callback: ImagePickCallback) {
         photoRequestFragment.callback = callback
         photoRequestFragment.size = size
         fromCamera()
@@ -73,7 +73,7 @@ class PicPickHelper(activity: FragmentActivity) {
      * 打开相册
      */
 
-    fun fromLocal(size: Size, callback: ImagePickCallback) {
+    fun fromLocal(size: Size?, callback: ImagePickCallback) {
         photoRequestFragment.callback = callback
         photoRequestFragment.size = size
         fromLocal()
