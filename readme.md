@@ -1,6 +1,6 @@
 **导入**
 
-    implementation('com.pince.maven:lib-imgPicker:tag')
+     implementation 'com.github.MJLblabla:hapiMediaPicker:Tag'
 
 **使用**
 　　　　
