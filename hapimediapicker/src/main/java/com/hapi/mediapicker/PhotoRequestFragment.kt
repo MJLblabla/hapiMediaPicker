@@ -4,6 +4,7 @@ package com.hapi.mediapicker
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.FileProvider
@@ -47,8 +48,8 @@ final class PhotoRequestFragment : Fragment() {
                                 .setOutputFilePath(ImageChooseHelper.compressFilePath)
                                 .setCompressCallback(object : ImagePickCallback {
 
-                                    override fun onSuccess(result: String?) {
-                                        callback?.onSuccess(result)
+                                    override fun onSuccess(result: String?,uri: Uri?) {
+                                        callback?.onSuccess(result,data.data)
                                     }
                                 }).execute(it)
                         }
@@ -70,8 +71,8 @@ final class PhotoRequestFragment : Fragment() {
                         .setCompressCallback(object : ImagePickCallback {
 
 
-                            override fun onSuccess(result: String?) {
-                                callback?.onSuccess(result)
+                            override fun onSuccess(result: String?,uri: Uri?) {
+                                callback?.onSuccess(result,data?.data)
                             }
                         }).execute(mCameraFilePath)
                 } else {
@@ -86,8 +87,8 @@ final class PhotoRequestFragment : Fragment() {
                 ImageCompression(context!!)
                     .setOutputFilePath(ImageChooseHelper.compressFilePath)
                     .setCompressCallback(object : ImagePickCallback {
-                        override fun onSuccess(result: String?) {
-                            callback?.onSuccess(result)
+                        override fun onSuccess(result: String?,uri: Uri?) {
+                            callback?.onSuccess(result,data?.data)
                         }
                     }).execute(mTempFilePath)
             }

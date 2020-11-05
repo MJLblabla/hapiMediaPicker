@@ -59,7 +59,7 @@ class ImageCompression(context: Context) : AsyncTask<String, Void, String>() {
     override fun onPostExecute(imagePath: String?) {
         // imagePath is path of new compressed image.
         if (mCompressCallback != null) {
-            mCompressCallback!!.onSuccess(imagePath)
+            mCompressCallback!!.onSuccess(imagePath,null)
         }
     }
 
