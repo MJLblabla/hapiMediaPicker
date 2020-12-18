@@ -42,11 +42,17 @@ object ImageChooseHelper {
      * https://developer.android.com/guide/topics/providers/document-provider
      */
     fun pickImageIntent(): Intent {
-        var intent = Intent()
-        intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
+
+        val intent =
+            Intent(Intent.ACTION_GET_CONTENT) //"android.intent.action.GET_CONTENT"
+
+        intent.type = "image/*" //查看类型 String IMAGE_UNSPECIFIED = "image/*";
+
+        val wrapperIntent =
+            Intent.createChooser(intent, null)
+
 //        intent.addCategory(Intent.CATEGORY_OPENABLE)
-        return intent
+        return wrapperIntent
     }
 
     /**

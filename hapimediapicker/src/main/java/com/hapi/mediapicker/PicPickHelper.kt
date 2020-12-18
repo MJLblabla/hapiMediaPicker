@@ -136,6 +136,9 @@ class PicPickHelper(activity: FragmentActivity) {
                 .subscribe{
                         permission->
                     if (permission.granted) {//全部同意后调用
+
+
+
                         photoRequestFragment.startActivityForResult(
                             ImageChooseHelper.pickImageIntent(),
                             REQUEST_CODE_CHOOSE_LOCAL
