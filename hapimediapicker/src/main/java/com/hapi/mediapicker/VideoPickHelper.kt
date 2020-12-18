@@ -3,7 +3,6 @@ package com.hapi.mediapicker
 import android.Manifest
 import android.app.Dialog
 import android.content.Intent
-import android.os.Build
 import android.provider.MediaStore
 import android.support.v4.app.FragmentActivity
 import android.view.Gravity
@@ -116,25 +115,14 @@ class VideoPickHelper constructor(activity: FragmentActivity) {
                 .subscribe{
                         permission->
                     if (permission.granted) {//全部同意后调用
-                        if (OsInfoUtil.isMIUI()) {//是否是小米设备,是的话用到弹窗选取入口的方法去选取视频
-                            val intent = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
-                            intent.setDataAndType(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, ContentUriUtil.MIMETYPE_MP4)
-                            videoRequestFragment.startActivityForResult(intent, REQUEST_CODE_PICK)
-                        } else {//直接跳到系统相册去选取视频
-                            var intent = Intent()
-                            if (Build.VERSION.SDK_INT < 19) {
-                                intent.setAction(Intent.ACTION_GET_CONTENT)
-                                intent.setType(ContentUriUtil.MIMETYPE_MP4)
-                            } else {
-//                            intent.setAction(Intent.ACTION_OPEN_DOCUMENT)
-//                            intent.addCategory(Intent.CATEGORY_OPENABLE)
-//                            intent.setType("video/*")
+                        val intent =
+                            Intent(Intent.ACTION_GET_CONTENT)
+                        intent.type = "video/*" //String VIDEO_UNSPECIFIED = "video/*";
 
-                                intent = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
-                                intent.setDataAndType(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, ContentUriUtil.MIMETYPE_MP4)
-                            }
-                            videoRequestFragment.startActivityForResult(intent, REQUEST_CODE_PICK)
-                        }
+                        val wrapperIntent =
+                            Intent.createChooser(intent, null)
+
+                        videoRequestFragment.startActivityForResult(wrapperIntent, REQUEST_CODE_PICK)
 
                     } else if (permission.shouldShowRequestPermissionRationale) {//只要有一个选择：禁止，但没有选择“以后不再询问”，以后申请权限，会继续弹出提示
                         videoRequestFragment.callback?.onPermissionNotGet(permission.name)
