@@ -6,13 +6,13 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.content.FileProvider
+import androidx.fragment.app.Fragment
+import androidx.core.content.FileProvider
 import android.util.Log
 import com.hapi.mediapicker.PicPickHelper.Companion.TAG
 import java.io.File
 
-final class PhotoRequestFragment : Fragment() {
+final class PhotoRequestFragment : androidx.fragment.app.Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

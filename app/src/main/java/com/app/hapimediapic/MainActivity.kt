@@ -1,9 +1,9 @@
 package com.app.hapimediapic
 
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.hapi.mediapicker.*
 import kotlinx.android.synthetic.main.activity_main.*
 

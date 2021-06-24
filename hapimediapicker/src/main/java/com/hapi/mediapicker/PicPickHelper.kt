@@ -3,7 +3,7 @@ package com.hapi.mediapicker
 import android.Manifest
 import android.app.Dialog
 import android.content.Context
-import android.support.v4.app.FragmentActivity
+import androidx.fragment.app.FragmentActivity
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +18,7 @@ import java.lang.ref.WeakReference
  * Created by caizhaowei on 2017/10/5.
  */
 
-class PicPickHelper(activity: FragmentActivity) {
+class PicPickHelper(activity: androidx.fragment.app.FragmentActivity) {
     private var activityWeakReference = WeakReference(activity)
     private val photoRequestFragment by lazy { getPhotoRequstFragment(activity) }
     private val rxPermissions by lazy { RxPermissions(activity) }
@@ -81,7 +81,7 @@ class PicPickHelper(activity: FragmentActivity) {
 
 
     // 获取Fragment的方法
-    private fun getPhotoRequstFragment(activity: FragmentActivity): PhotoRequestFragment {
+    private fun getPhotoRequstFragment(activity: androidx.fragment.app.FragmentActivity): PhotoRequestFragment {
         // 查询是否已经存在了该Fragment，这样是为了让该Fragment只有一个实例
         var rxPermissionsFragment: PhotoRequestFragment? = findPhotoRequstFragment(activity)
         val isNewInstance = rxPermissionsFragment == null
@@ -101,7 +101,7 @@ class PicPickHelper(activity: FragmentActivity) {
     }
 
     // 利用tag去找是否已经有该Fragment的实例
-    private fun findPhotoRequstFragment(activity: FragmentActivity): PhotoRequestFragment? {
+    private fun findPhotoRequstFragment(activity: androidx.fragment.app.FragmentActivity): PhotoRequestFragment? {
         return activity.fragmentManager.findFragmentByTag(TAG) as PhotoRequestFragment?
     }
 
@@ -136,9 +136,6 @@ class PicPickHelper(activity: FragmentActivity) {
                 .subscribe{
                         permission->
                     if (permission.granted) {//全部同意后调用
-
-
-
                         photoRequestFragment.startActivityForResult(
                             ImageChooseHelper.pickImageIntent(),
                             REQUEST_CODE_CHOOSE_LOCAL

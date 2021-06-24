@@ -4,7 +4,7 @@ import android.Manifest
 import android.app.Dialog
 import android.content.Intent
 import android.provider.MediaStore
-import android.support.v4.app.FragmentActivity
+import androidx.fragment.app.FragmentActivity
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -18,9 +18,9 @@ import java.lang.ref.WeakReference
  *
  * @date 2018/12/14
  */
-class VideoPickHelper constructor(activity: FragmentActivity) {
+class VideoPickHelper constructor(activity: androidx.fragment.app.FragmentActivity) {
 
-    private var host = WeakReference<FragmentActivity>(activity)
+    private var host = WeakReference<androidx.fragment.app.FragmentActivity>(activity)
     private val rxPermissions by lazy { RxPermissions(activity) }
     private val videoRequestFragment by lazy { getPhotoRequstFragment(activity) }
 
@@ -59,7 +59,7 @@ class VideoPickHelper constructor(activity: FragmentActivity) {
 
 
     // 获取Fragment的方法
-    private fun getPhotoRequstFragment(activity: FragmentActivity): VideoRequestFragment {
+    private fun getPhotoRequstFragment(activity: androidx.fragment.app.FragmentActivity): VideoRequestFragment {
         // 查询是否已经存在了该Fragment，这样是为了让该Fragment只有一个实例
         var rxPermissionsFragment: VideoRequestFragment? = findPhotoRequstFragment(activity)
         val isNewInstance = rxPermissionsFragment == null
@@ -79,7 +79,7 @@ class VideoPickHelper constructor(activity: FragmentActivity) {
     }
 
     // 利用tag去找是否已经有该Fragment的实例
-    private fun findPhotoRequstFragment(activity: FragmentActivity): VideoRequestFragment? {
+    private fun findPhotoRequstFragment(activity: androidx.fragment.app.FragmentActivity): VideoRequestFragment? {
         return activity.fragmentManager.findFragmentByTag(TAG) as VideoRequestFragment?
     }
 
