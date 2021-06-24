@@ -13,11 +13,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-
         val mPicPickHelper = PicPickHelper(this)
         val mVideoPickHelper = VideoPickHelper(this)
-
 
         // 选择图片　默认选择弹窗
         button.setOnClickListener {
@@ -41,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
         // 选择图片从　图库
         button2.setOnClickListener {
-            mPicPickHelper.fromLocal(Size(1,1), object : ImagePickCallback {
+            mPicPickHelper.fromLocal(null, object : ImagePickCallback {
                 override fun onSuccess(result: String?,uri: Uri?) {
                     Toast.makeText(this@MainActivity, "文件路径${result}", Toast.LENGTH_SHORT).show()
                 }
@@ -87,7 +84,6 @@ class MainActivity : AppCompatActivity() {
                     val thumb = params.thumbPath
                     val len = params.duration
                     val size = params.size
-
 
                     Toast.makeText(this@MainActivity, "文件路径${path}", Toast.LENGTH_SHORT).show()
                 }

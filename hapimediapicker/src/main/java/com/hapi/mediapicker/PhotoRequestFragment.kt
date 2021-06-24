@@ -19,17 +19,14 @@ final class PhotoRequestFragment : Fragment() {
         this.retainInstance = true
     }
 
-     var size: Size?=null
-     var callback: ImagePickCallback? = null
+    var size: Size? = null
+    var callback: ImagePickCallback? = null
 
-     var mCameraFilePath: String? = null
-     var mTempFilePath: String? = null
+    var mCameraFilePath: String? = null
+    var mTempFilePath: String? = null
 
-
-
-
-    private fun checkSizeCrop():Boolean{
-        return !(size==null || size!!.aspectX < 1 || size!!.aspectY < 1)
+    private fun checkSizeCrop(): Boolean {
+        return !(size == null || size!!.aspectX < 1 || size!!.aspectY < 1)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -41,27 +38,45 @@ final class PhotoRequestFragment : Fragment() {
                 if (data?.data != null) {
                     if (!checkSizeCrop()) {
                         val originFileData =
-                            ContentUriUtil.getDataFromUri(context!!, data.data, ContentUriUtil.ContentType.image)
-                        originFileData?.let {
-
+                            ContentUriUtil.getDataFromUri(
+                                context!!,
+                                data.data,
+                                ContentUriUtil.ContentType.image
+                            )
+                        if(originFileData==null){
+                            callback?.onSuccess("", data.data)
+                        }else{
                             ImageCompression(context!!)
                                 .setOutputFilePath(ImageChooseHelper.compressFilePath)
                                 .setCompressCallback(object : ImagePickCallback {
 
-                                    override fun onSuccess(result: String?,uri: Uri?) {
-                                        callback?.onSuccess(result,data.data)
+                                    override fun onSuccess(result: String?, uri: Uri?) {
+                                        callback?.onSuccess(result, data.data)
                                     }
-                                }).execute(it)
+                                }).execute(originFileData)
                         }
                     } else {
                         mTempFilePath = ImageChooseHelper.cropFilePath
-                        val filePath = ContentUriUtil.getDataFromUri(context!!, data.data, ContentUriUtil.ContentType.image)
-                        val imageUri = FileProvider.getUriForFile(context!!, ImageChooseHelper.PROVIDER_KEY, File(filePath!!))
-                        val intent = ImageChooseHelper.cropImageIntent(activity!!, imageUri!!, size!!, mTempFilePath!!)
+                        val filePath = ContentUriUtil.getDataFromUri(
+                            context!!,
+                            data.data,
+                            ContentUriUtil.ContentType.image
+                        )
+                        val imageUri = FileProvider.getUriForFile(
+                            context!!,
+                            ImageChooseHelper.PROVIDER_KEY,
+                            File(filePath!!)
+                        )
+                        val intent = ImageChooseHelper.cropImageIntent(
+                            activity!!,
+                            imageUri!!,
+                            size!!,
+                            mTempFilePath!!
+                        )
                         startActivityForResult(intent, PicPickHelper.REQUEST_CODE_CROP)
                     }
                 } else {
-                    Log.e(TAG,"REQUEST_CODE_CHOOSE_LOCAL data.getData() is null")
+                    Log.e(TAG, "REQUEST_CODE_CHOOSE_LOCAL data.getData() is null")
                 }
             }
             PicPickHelper.REQUEST_CODE_CAMERA -> {
@@ -69,17 +84,24 @@ final class PhotoRequestFragment : Fragment() {
                     ImageCompression(context!!)
                         .setOutputFilePath(ImageChooseHelper.compressFilePath)
                         .setCompressCallback(object : ImagePickCallback {
-
-
-                            override fun onSuccess(result: String?,uri: Uri?) {
-                                callback?.onSuccess(result,data?.data)
+                            override fun onSuccess(result: String?, uri: Uri?) {
+                                callback?.onSuccess(result, data?.data)
                             }
                         }).execute(mCameraFilePath)
                 } else {
                     val imageUri =
-                        FileProvider.getUriForFile(context!!, ImageChooseHelper.PROVIDER_KEY, File(mCameraFilePath!!))
+                        FileProvider.getUriForFile(
+                            context!!,
+                            ImageChooseHelper.PROVIDER_KEY,
+                            File(mCameraFilePath!!)
+                        )
                     mTempFilePath = ImageChooseHelper.cropFilePath
-                    val intent = ImageChooseHelper.cropImageIntent(activity!!, imageUri, size!!, mTempFilePath!!)
+                    val intent = ImageChooseHelper.cropImageIntent(
+                        activity!!,
+                        imageUri,
+                        size!!,
+                        mTempFilePath!!
+                    )
                     startActivityForResult(intent, PicPickHelper.REQUEST_CODE_CROP)
                 }
             }
@@ -87,8 +109,8 @@ final class PhotoRequestFragment : Fragment() {
                 ImageCompression(context!!)
                     .setOutputFilePath(ImageChooseHelper.compressFilePath)
                     .setCompressCallback(object : ImagePickCallback {
-                        override fun onSuccess(result: String?,uri: Uri?) {
-                            callback?.onSuccess(result,data?.data)
+                        override fun onSuccess(result: String?, uri: Uri?) {
+                            callback?.onSuccess(result, data?.data)
                         }
                     }).execute(mTempFilePath)
             }
