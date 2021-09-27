@@ -49,7 +49,8 @@ public class ScreenShotPlugin {
 
 
     private ServiceConnection serviceConnection;
-    public void startMediaRecorder(final FragmentActivity activity, OnScreenShotListener callback) {
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void startMediaRecorder(final FragmentActivity activity, final OnScreenShotListener callback) {
         MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) activity.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
         // 此处宽高需要获取屏幕完整宽高，否则截屏图片会有白/黑边
         final DisplayMetrics displayMetrics = new DisplayMetrics();
