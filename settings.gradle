@@ -1,1 +1,1 @@
-include ':app', ':hapimediapicker'
+include ':app', ':hapimediapicker',":lib_sreenshot"
