@@ -2,26 +2,19 @@ package com.hapi.mediapicker
 
 import android.Manifest
 import android.app.Dialog
-import android.content.Context
-import androidx.fragment.app.FragmentActivity
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
-import com.tbruyelle.rxpermissions2.RxPermissions
+import androidx.appcompat.app.AppCompatActivity
+import com.hapi.permission.HapiPermission
 
 import java.lang.ref.WeakReference
 
-
-/**
- * Created by caizhaowei on 2017/10/5.
- */
-
-class PicPickHelper(activity: androidx.fragment.app.FragmentActivity) {
+class PicPickHelper(activity: AppCompatActivity) {
     private var activityWeakReference = WeakReference(activity)
     private val photoRequestFragment by lazy { getPhotoRequstFragment(activity) }
-    private val rxPermissions by lazy { RxPermissions(activity) }
 
     /**
      * 使用默认选择弹窗
@@ -29,15 +22,17 @@ class PicPickHelper(activity: androidx.fragment.app.FragmentActivity) {
     fun show(size: Size?, callback: ImagePickCallback) {
         photoRequestFragment.callback = callback
         photoRequestFragment.size = size
-        val bottomDialog = Dialog(activityWeakReference.get(), R.style.BottomViewWhiteMask)
-        val contentView = LayoutInflater.from(activityWeakReference.get()).inflate(R.layout.dialog_choose_pic, null)
-        bottomDialog.setCancelable(true)
-        bottomDialog.setCanceledOnTouchOutside(true)
-        bottomDialog.setContentView(contentView)
-        bottomDialog.show()
+        val bottomDialog = activityWeakReference.get()
+            ?.let { Dialog(it, R.style.BottomViewWhiteMask) }
+        val contentView = LayoutInflater.from(activityWeakReference.get())
+            .inflate(R.layout.dialog_choose_pic, null)
+        bottomDialog?.setCancelable(true)
+        bottomDialog?.setCanceledOnTouchOutside(true)
+        bottomDialog?.setContentView(contentView)
+        bottomDialog?.show()
 
         val imageChooseListener = View.OnClickListener { v ->
-            bottomDialog.dismiss()
+            bottomDialog?.dismiss()
             when (v.id) {
                 R.id.view1 -> {
                     fromCamera()
@@ -47,18 +42,16 @@ class PicPickHelper(activity: androidx.fragment.app.FragmentActivity) {
                 }
             }
         }
-
         contentView.findViewById<TextView>(R.id.view1).setOnClickListener(imageChooseListener)
         contentView.findViewById<TextView>(R.id.view2).setOnClickListener(imageChooseListener)
         contentView.findViewById<TextView>(R.id.view3).setOnClickListener(imageChooseListener)
 
-        val attributes = bottomDialog.window.attributes
-        attributes.width = WindowManager.LayoutParams.MATCH_PARENT
-        attributes.height = WindowManager.LayoutParams.WRAP_CONTENT
-        attributes.gravity = Gravity.BOTTOM
-        bottomDialog.window.attributes = attributes
+        val attributes = bottomDialog?.window?.attributes
+        attributes?.width = WindowManager.LayoutParams.MATCH_PARENT
+        attributes?.height = WindowManager.LayoutParams.WRAP_CONTENT
+        attributes?.gravity = Gravity.BOTTOM
+        bottomDialog?.window?.attributes = attributes
     }
-
 
     /**
      * 打开相机选择
@@ -72,13 +65,11 @@ class PicPickHelper(activity: androidx.fragment.app.FragmentActivity) {
     /**
      * 打开相册
      */
-
     fun fromLocal(size: Size?, callback: ImagePickCallback) {
         photoRequestFragment.callback = callback
         photoRequestFragment.size = size
         fromLocal()
     }
-
 
     // 获取Fragment的方法
     private fun getPhotoRequstFragment(activity: androidx.fragment.app.FragmentActivity): PhotoRequestFragment {
@@ -105,59 +96,48 @@ class PicPickHelper(activity: androidx.fragment.app.FragmentActivity) {
         return activity.fragmentManager.findFragmentByTag(TAG) as PhotoRequestFragment?
     }
 
-
     private fun fromCamera() {
         activityWeakReference.get()?.let {
-            rxPermissions.requestEachCombined(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA)
-                .subscribe{permission->
-                    if (permission.granted) {//全部同意后调用
-                        val mCameraFilePath = ImageChooseHelper.cameraFilePath
-                        photoRequestFragment.mCameraFilePath = mCameraFilePath
-                        photoRequestFragment.startActivityForResult(
-                            ImageChooseHelper.takePhotoIntent(
-                                it,
-                                mCameraFilePath!!
-                            ), REQUEST_CODE_CAMERA
-                        )
-
-                    } else if (permission.shouldShowRequestPermissionRationale) {//只要有一个选择：禁止，但没有选择“以后不再询问”，以后申请权限，会继续弹出提示
-                        photoRequestFragment.callback?.onPermissionNotGet(permission.name)
-                    } else {//只要有一个选择：禁止，但选择“以后不再询问”，以后申请权限，不会继续弹出提示
-                        photoRequestFragment.callback?.onPermissionNotGet(permission.name)
-                    }
+            HapiPermission.requestPermission(
+                it, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+            ) { grantedPermissions, deniedPermissions, alwaysDeniedPermissions ->
+                if (grantedPermissions.size == 2) {
+                    val mCameraFilePath = ImageChooseHelper.cameraFilePath
+                    photoRequestFragment.mCameraFilePath = mCameraFilePath
+                    photoRequestFragment.startActivityForResult(
+                        ImageChooseHelper.takePhotoIntent(
+                            it,
+                            mCameraFilePath
+                        ), REQUEST_CODE_CAMERA
+                    )
+                } else {
+                    photoRequestFragment.callback?.onPermissionNotGet(deniedPermissions.toString() + alwaysDeniedPermissions.toString())
                 }
+            }
         }
     }
-
 
     private fun fromLocal() {
         activityWeakReference.get()?.let {
-            rxPermissions.requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .subscribe{
-                        permission->
-                    if (permission.granted) {//全部同意后调用
-                        photoRequestFragment.startActivityForResult(
-                            ImageChooseHelper.pickImageIntent(),
-                            REQUEST_CODE_CHOOSE_LOCAL
-                        )
-
-                    } else if (permission.shouldShowRequestPermissionRationale) {//只要有一个选择：禁止，但没有选择“以后不再询问”，以后申请权限，会继续弹出提示
-                        photoRequestFragment.callback?.onPermissionNotGet(permission.name)
-                    } else {//只要有一个选择：禁止，但选择“以后不再询问”，以后申请权限，不会继续弹出提示
-                        photoRequestFragment.callback?.onPermissionNotGet(permission.name)
-                    }
+            HapiPermission.requestPermission(
+                it, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            ) { grantedPermissions, deniedPermissions, alwaysDeniedPermissions ->
+                if (grantedPermissions.size == 1) {
+                    photoRequestFragment.startActivityForResult(
+                        ImageChooseHelper.pickImageIntent(),
+                        REQUEST_CODE_CHOOSE_LOCAL
+                    )
+                } else {
+                    photoRequestFragment.callback?.onPermissionNotGet(deniedPermissions.toString() + alwaysDeniedPermissions.toString())
                 }
+            }
         }
     }
-
 
     companion object {
         val REQUEST_CODE_CHOOSE_LOCAL = RequestCodeCreator.generate()
         val REQUEST_CODE_CAMERA = RequestCodeCreator.generate()
         val REQUEST_CODE_CROP = RequestCodeCreator.generate()
-
-
-
         val TAG = "PhotoRequestFragment"
     }
 }

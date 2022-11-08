@@ -39,14 +39,14 @@ final class PhotoRequestFragment : androidx.fragment.app.Fragment() {
                     if (!checkSizeCrop()) {
                         val originFileData =
                             ContentUriUtil.getDataFromUri(
-                                context!!,
-                                data.data,
+                                requireContext(),
+                                data.data!!,
                                 ContentUriUtil.ContentType.image
                             )
                         if(originFileData==null){
                             callback?.onSuccess("", data.data)
                         }else{
-                            ImageCompression(context!!)
+                            ImageCompression(requireContext())
                                 .setOutputFilePath(ImageChooseHelper.compressFilePath)
                                 .setCompressCallback(object : ImagePickCallback {
 
@@ -58,17 +58,17 @@ final class PhotoRequestFragment : androidx.fragment.app.Fragment() {
                     } else {
                         mTempFilePath = ImageChooseHelper.cropFilePath
                         val filePath = ContentUriUtil.getDataFromUri(
-                            context!!,
-                            data.data,
+                            requireContext(),
+                            data.data!!,
                             ContentUriUtil.ContentType.image
                         )
                         val imageUri = FileProvider.getUriForFile(
-                            context!!,
+                            requireContext(),
                             ImageChooseHelper.PROVIDER_KEY,
                             File(filePath!!)
                         )
                         val intent = ImageChooseHelper.cropImageIntent(
-                            activity!!,
+                            requireActivity(),
                             imageUri!!,
                             size!!,
                             mTempFilePath!!
@@ -81,7 +81,7 @@ final class PhotoRequestFragment : androidx.fragment.app.Fragment() {
             }
             PicPickHelper.REQUEST_CODE_CAMERA -> {
                 if (!checkSizeCrop()) {
-                    ImageCompression(context!!)
+                    ImageCompression(requireContext())
                         .setOutputFilePath(ImageChooseHelper.compressFilePath)
                         .setCompressCallback(object : ImagePickCallback {
                             override fun onSuccess(result: String?, uri: Uri?) {
@@ -91,13 +91,13 @@ final class PhotoRequestFragment : androidx.fragment.app.Fragment() {
                 } else {
                     val imageUri =
                         FileProvider.getUriForFile(
-                            context!!,
+                            requireContext(),
                             ImageChooseHelper.PROVIDER_KEY,
                             File(mCameraFilePath!!)
                         )
                     mTempFilePath = ImageChooseHelper.cropFilePath
                     val intent = ImageChooseHelper.cropImageIntent(
-                        activity!!,
+                        requireActivity(),
                         imageUri,
                         size!!,
                         mTempFilePath!!
@@ -106,7 +106,7 @@ final class PhotoRequestFragment : androidx.fragment.app.Fragment() {
                 }
             }
             PicPickHelper.REQUEST_CODE_CROP -> {// 所有图片选取都得走得这一步
-                ImageCompression(context!!)
+                ImageCompression(requireContext())
                     .setOutputFilePath(ImageChooseHelper.compressFilePath)
                     .setCompressCallback(object : ImagePickCallback {
                         override fun onSuccess(result: String?, uri: Uri?) {
@@ -116,7 +116,6 @@ final class PhotoRequestFragment : androidx.fragment.app.Fragment() {
             }
             else -> {
             }
-
         }
     }
 

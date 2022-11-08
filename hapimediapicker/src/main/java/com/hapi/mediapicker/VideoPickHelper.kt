@@ -3,31 +3,25 @@ package com.hapi.mediapicker
 import android.Manifest
 import android.app.Dialog
 import android.content.Intent
-import android.provider.MediaStore
-import androidx.fragment.app.FragmentActivity
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
-import com.hapi.ut.OsInfoUtil
-import com.tbruyelle.rxpermissions2.RxPermissions
+import androidx.appcompat.app.AppCompatActivity
+import com.hapi.permission.HapiPermission
 import java.lang.ref.WeakReference
 
-/**
- *
- * @date 2018/12/14
- */
-class VideoPickHelper constructor(activity: androidx.fragment.app.FragmentActivity) {
+class VideoPickHelper constructor(activity: AppCompatActivity) {
 
-    private var host = WeakReference<androidx.fragment.app.FragmentActivity>(activity)
-    private val rxPermissions by lazy { RxPermissions(activity) }
+    private var host = WeakReference<AppCompatActivity>(activity)
+
     private val videoRequestFragment by lazy { getPhotoRequstFragment(activity) }
 
     fun show(callback: VideoPickCallBack) {
 
         videoRequestFragment.callback = callback
-        val bottomDialog = Dialog(host.get(), R.style.BottomViewWhiteMask)
+        val bottomDialog = Dialog(host.get()!!, R.style.BottomViewWhiteMask)
         val contentView = LayoutInflater.from(host.get()).inflate(R.layout.dialog_choose_pic, null)
         bottomDialog.setCancelable(true)
         bottomDialog.setCanceledOnTouchOutside(true)
@@ -50,11 +44,11 @@ class VideoPickHelper constructor(activity: androidx.fragment.app.FragmentActivi
         contentView.findViewById<TextView>(R.id.view2).setOnClickListener(imageChooseListener)
         contentView.findViewById<TextView>(R.id.view3).setOnClickListener(imageChooseListener)
 
-        val attributes = bottomDialog.window.attributes
-        attributes.width = WindowManager.LayoutParams.MATCH_PARENT
-        attributes.height = WindowManager.LayoutParams.WRAP_CONTENT
-        attributes.gravity = Gravity.BOTTOM
-        bottomDialog.window.attributes = attributes
+        val attributes = bottomDialog.window?.attributes
+        attributes?.width = WindowManager.LayoutParams.MATCH_PARENT
+        attributes?.height = WindowManager.LayoutParams.WRAP_CONTENT
+        attributes?.gravity = Gravity.BOTTOM
+        bottomDialog.window?.attributes = attributes
     }
 
 
@@ -90,17 +84,15 @@ class VideoPickHelper constructor(activity: androidx.fragment.app.FragmentActivi
     }
     private fun fromCamera() {
         host.get()?.let {
-            rxPermissions.requestEachCombined(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA)
-                .subscribe{permission->
-                    if (permission.granted) {//全部同意后调用
-                        val intent = ImageChooseHelper.videoIntent(it)
-                        videoRequestFragment.startActivityForResult(intent, REQUEST_CODE_CAMERA)
-                    } else if (permission.shouldShowRequestPermissionRationale) {//只要有一个选择：禁止，但没有选择“以后不再询问”，以后申请权限，会继续弹出提示
-                        videoRequestFragment.callback?.onPermissionNotGet(permission.name)
-                    } else {//只要有一个选择：禁止，但选择“以后不再询问”，以后申请权限，不会继续弹出提示
-                        videoRequestFragment.callback?.onPermissionNotGet(permission.name)
-                    }
+            HapiPermission.requestPermission(it,arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)){
+                    grantedPermissions, deniedPermissions, alwaysDeniedPermissions ->
+                if (grantedPermissions.size == 2) {
+                    val intent = ImageChooseHelper.videoIntent(it)
+                    videoRequestFragment.startActivityForResult(intent, REQUEST_CODE_CAMERA)
+                } else {
+                    videoRequestFragment.callback?.onPermissionNotGet(deniedPermissions.toString() + alwaysDeniedPermissions.toString())
                 }
+            }
         }
     }
 
@@ -111,29 +103,22 @@ class VideoPickHelper constructor(activity: androidx.fragment.app.FragmentActivi
 
     private fun fromLocal() {
         host.get()?.let {
-            rxPermissions.requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .subscribe{
-                        permission->
-                    if (permission.granted) {//全部同意后调用
-                        val intent =
-                            Intent(Intent.ACTION_GET_CONTENT)
-                        intent.type = "video/*" //String VIDEO_UNSPECIFIED = "video/*";
+            HapiPermission.requestPermission(it,arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                    grantedPermissions, deniedPermissions, alwaysDeniedPermissions ->
+                if (grantedPermissions.size == 1) {
+                    val intent =
+                        Intent(Intent.ACTION_GET_CONTENT)
+                    intent.type = "video/*" //String VIDEO_UNSPECIFIED = "video/*";
+                    val wrapperIntent =
+                        Intent.createChooser(intent, null)
+                    videoRequestFragment.startActivityForResult(wrapperIntent, REQUEST_CODE_PICK)
 
-                        val wrapperIntent =
-                            Intent.createChooser(intent, null)
-
-                        videoRequestFragment.startActivityForResult(wrapperIntent, REQUEST_CODE_PICK)
-
-                    } else if (permission.shouldShowRequestPermissionRationale) {//只要有一个选择：禁止，但没有选择“以后不再询问”，以后申请权限，会继续弹出提示
-                        videoRequestFragment.callback?.onPermissionNotGet(permission.name)
-                    } else {//只要有一个选择：禁止，但选择“以后不再询问”，以后申请权限，不会继续弹出提示
-                        videoRequestFragment.callback?.onPermissionNotGet(permission.name)
-                    }
+                } else {
+                    videoRequestFragment.callback?.onPermissionNotGet(deniedPermissions.toString() + alwaysDeniedPermissions.toString())
                 }
+            }
         }
     }
-
-
 
     companion object {
         private val TAG = "VideoPickHelper"

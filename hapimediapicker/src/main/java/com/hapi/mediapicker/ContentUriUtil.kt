@@ -44,7 +44,7 @@ object ContentUriUtil {
     }
 
     @SuppressLint("NewApi")
-    fun getDataFromUri(context: Context, uri: Uri, contentType: ContentType?): String? {
+    fun getDataFromUri(context: Context, uri: Uri, contentType: ContentType): String? {
         if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, uri)) { // DocumentProvider
             if (isExternalStorageDocument(uri)) { // ExternalStorageProvider
                 val docId = DocumentsContract.getDocumentId(uri)
@@ -75,7 +75,7 @@ object ContentUriUtil {
                 }
                 val selection = "_id=?"
                 val selectionArgs = arrayOf(split[1])
-                return getDataColumn(context, type, contentUri, selection, selectionArgs)
+                return getDataColumn(context, type, contentUri!!, selection, selectionArgs)
             }
         } else if (ContentResolver.SCHEME_CONTENT.equals(uri.scheme!!, ignoreCase = true)) { // DownloadsProvider
             return getDataColumn(context, contentType, uri, null, null)
@@ -104,7 +104,7 @@ object ContentUriUtil {
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
      */
-    fun getDataColumn(context: Context, type: ContentType?, contentUri: Uri?, selection: String?, selectionArgs: Array<String>?): String? {
+    fun getDataColumn(context: Context, type: ContentType, contentUri: Uri, selection: String?, selectionArgs: Array<String>?): String? {
         var contentResolver = context.contentResolver
         val mediaIdColumn = MediaStore.MediaColumns._ID
         val mimeTypeColumn = MediaStore.MediaColumns.MIME_TYPE

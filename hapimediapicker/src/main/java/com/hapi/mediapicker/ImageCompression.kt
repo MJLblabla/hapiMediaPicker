@@ -63,7 +63,6 @@ class ImageCompression(context: Context) : AsyncTask<String, Void, String>() {
         }
     }
 
-
     private fun compressImage(imagePath: String): String {
         var scaledBitmap: Bitmap? = null
 
@@ -122,7 +121,7 @@ class ImageCompression(context: Context) : AsyncTask<String, Void, String>() {
         scaleMatrix.setScale(ratioX, ratioY, middleX, middleY)
 
         val canvas = Canvas(scaledBitmap!!)
-        canvas.matrix = scaleMatrix
+        canvas.setMatrix(scaleMatrix)
         canvas.drawBitmap(bmp, middleX - bmp.width / 2, middleY - bmp.height / 2, Paint(Paint.FILTER_BITMAP_FLAG))
 
         bmp.recycle()
